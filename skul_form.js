@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const connectDB = require("./config/db");
+const studentsRoutes = require("./route/student_route");
 dotenv.config();
 
 const app = express()
@@ -11,7 +12,9 @@ app.use(express.json())
 app.use(morgan('dev'))
 
 const port = process.env.PORT;
-const dbUrl = process.env.MONGODB_URL;
+
+app.use("/api/students", studentsRoutes);
+//const dbUrl = process.env.MONGODB_URL;
 
 // const connectDB = async () => {
 //     try {
