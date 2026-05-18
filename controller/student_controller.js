@@ -1,33 +1,9 @@
-const express = require("express");
-const morgan = require("morgan");
-const dotenv = require("dotenv");
-const mongoose = require("mongoose");
-dotenv.config();
+const Student = require("../models/students.schema");
 
-const app = express()
 
-app.use(express.json())
-app.use(morgan('dev'))
 
-const port = process.env.PORT;
-const dbUrl = process.env.MONGODB_URL;
-
-const connectDB = async () => {
-    try {
-        await mongoose.connect(dbUrl);
-        console.log("Connected to MongoDB");
-    } catch (error) {
-        console.error("Error connecting to MongoDB:", error);
-        process.exit(1);
-    }
-};
-// process exit 1: when you want to call error
-// process exit 2: when yu want success
-// 0 means success, 1 means failure
- // putting schema in a varaible
-
-app.post("/add-student", async (req, res)=> {// post is to create
-    const { fullName, email, phoneNumber, studentsClass, gender, address, isAdmitted } = req.body; // object destructuring
+const addStudent = async (req, res) => {
+    const { fullName, email, phoneNumber, studentsClass, gender, address, isAdmitted } = req.body;
     try {
         if (!fullName || !email || !phoneNumber || !studentsClass || !gender || !address) {
             return res.status(400).json({ message: "All fields are required" });
@@ -47,9 +23,9 @@ app.post("/add-student", async (req, res)=> {// post is to create
         console.error("Error adding student:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
-})
+}
 
-app.get("/students", async (req, res) => {
+const getAllStudents = async (req, res) => {
     try {
         const students = await Student.find();
         return res.status(200).json({ students });
@@ -57,9 +33,9 @@ app.get("/students", async (req, res) => {
         console.error("Error fetching students:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
-});
+};
 
-app.get("/students/:id", async (req, res) => {
+const getStudentById = async (req, res) => {
     const { id } = req.params;
     try {
         const student = await Student.findById(id);
@@ -71,9 +47,9 @@ app.get("/students/:id", async (req, res) => {
         console.error("Error fetching student:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
-});
+};
 
-app.get("/find-students-by-name", async (req, res) => {
+const findStudentsByName = async (req, res) => {
     const { name } = req.query;
     try {
         const students = await Student.find({ fullName: { $regex: name, $options: "i" } });
@@ -82,9 +58,9 @@ app.get("/find-students-by-name", async (req, res) => {
         console.error("Error fetching students:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
-});
+};
 
-app.put("/update-student/:id", async (req, res) => {
+const updateStudent = async (req, res) => {
     const { id } = req.params;
     const { fullName, email, phoneNumber, studentsClass, gender, address, isAdmitted } = req.body;
     try {
@@ -98,9 +74,9 @@ app.put("/update-student/:id", async (req, res) => {
         console.error("Error updating student:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
-});
+};
 
-app.delete("/delete-student/:id", async (req, res) => {
+const deleteStudent = async (req, res) => {
     const { id } = req.params;
     try {
         await Student.findByIdAndDelete(id);
@@ -109,9 +85,13 @@ app.delete("/delete-student/:id", async (req, res) => {
         console.error("Error deleting student:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
-});
+};
 
-app.listen(port, () => {
-    connectDB();
-    console.log(`Server is running on port ${port}`);
-});
+module.exports = {
+    addStudent,
+    getAllStudents,
+    getStudentById,
+    findStudentsByName,
+    updateStudent,
+    deleteStudent
+}
