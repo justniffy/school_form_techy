@@ -1,4 +1,4 @@
-const Student = require("../models/students.schema");
+const Student = require("../models/students_schema");
 
 
 
