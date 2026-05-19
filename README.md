@@ -1,2 +1,3 @@
-# school_form_techy
+ CRUD MVC application for students
+ 
 
